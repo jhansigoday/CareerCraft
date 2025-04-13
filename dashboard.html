@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - Dashboard</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #1e3a5f;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .brand-name {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-menu .user-name {
+            color: white;
+            margin-right: 15px;
+        }
+
+        .menu-button {
+            background-color: #4fd1c5;
+            color: #1e3a5f;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Dashboard Main */
+        .dashboard {
+            padding: 50px 0;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            color: #1e3a5f;
+            margin-bottom: 15px;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .option-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #4fd1c5;
+        }
+
+        .option-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #1e3a5f;
+        }
+
+        .option-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .option-button {
+            background-color: #4fd1c5;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .option-button:hover {
+            background-color: #38b2ac;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1e3a5f;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-logo {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .footer-brand {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            margin: 15px 0;
+        }
+
+        .footer-links a {
+            color: #4fd1c5;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+
+        .copyright {
+            margin-top: 15px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center;">
+                    <img src="logo.jpg" alt="CareerCue Logo" class="logo">
+                    <span class="brand-name">CareerCraft</span>
+                </div>
+                <div class="user-menu">
+                    <span class="user-name" id="user-name">User Name</span>
+                    <button class="menu-button" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Main Content -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="welcome-section">
+                <h1>Welcome to Your CareerC Dashboard</h1>
+                <p>Let's start your journey to career success. Choose an option below to get started.</p>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" id="create-resume">
+                    <div class="option-icon">📝</div>
+                    <h2>Create New Resume</h2>
+                    <p>Build a professional resume from scratch using our templates and step-by-step guide.</p>
+                    <button class="option-button">Create Resume</button>
+                </div>
+
+                <div class="option-card" id="upload-resume">
+                    <div class="option-icon">📤</div>
+                    <h2>Upload Existing Resume</h2>
+                    <p>Already have a resume? Upload it and let us match you with job opportunities.</p>
+                    <button class="option-button">Upload Resume</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <img src="logo.jpg" alt="CareerCraft Logo" class="footer-logo">
+            <div class="footer-brand">CareerCraft</div>
+            <div class="footer-links">
+                <a href="#">About Us</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </div>
+            <p class="copyright">© 2025 CareerCraft. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function () {
+            const loggedIn = localStorage.getItem('loggedIn');
+            const userEmail = localStorage.getItem('userEmail');
+            const userName = localStorage.getItem('userName');
+
+            if (!loggedIn || loggedIn !== 'true') {
+                // Redirect to home page if not logged in
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Display user name
+            const userNameElement = document.getElementById('user-name');
+            userNameElement.textContent = userName || userEmail;
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            logoutBtn.addEventListener('click', function () {
+                localStorage.removeItem('loggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                window.location.href = 'index.html';
+            });
+
+            // Resume creation option
+            const createResumeCard = document.getElementById('create-resume');
+            createResumeCard.addEventListener('click', function () {
+                window.location.href = 'resumet.html';
+            });
+
+            // Resume upload option
+            const uploadResumeCard = document.getElementById('upload-resume');
+            uploadResumeCard.addEventListener('click', function () {
+                window.location.href = 'resume.html';
+            });
+        });
+    </script>
+</body>
+</html>
