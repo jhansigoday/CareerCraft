@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - CareerCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #1e3a5f;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background-color: #4cd1c0;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #3bb8a7;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: #1e3a5f;
+            text-decoration: none;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .back-btn:before {
+            content: "← ";
+        }
+
+        .back-btn:hover {
+            color: #4cd1c0;
+        }
+
+        .main-title {
+            color: #1e3a5f;
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            margin: 40px 0 20px;
+        }
+
+        .description {
+            color: #666;
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 18px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Upload Section Styles */
+        .upload-section {
+            background-color: white;
+            padding: 35px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #1e3a5f;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #4cd1c0;
+            background-color: #f5f5f5;
+        }
+
+        .upload-icon {
+            width: 70px;
+            height: 70px;
+            color: #1e3a5f;
+            margin-bottom: 25px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            color: #888;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            display: none;
+            background-color: #e9f7f5;
+            border: 1px solid #b9e6e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #1e3a5f;
+            margin-right: 10px;
+        }
+
+        .remove-file {
+            background-color: transparent;
+            color: #e74c3c;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 5px;
+            margin-right: 10px;
+        }
+
+        .file-meta {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #4cd1c0;
+            width: 0%;
+            transition: width 0.2s;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .submit-btn {
+            background-color: #1e3a5f;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: #2c4d79;
+        }
+
+        .submit-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        h3 {
+            color: #1e3a5f;
+            margin-bottom: 20px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .benefits-list {
+            list-style-type: none;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .benefits-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .benefits-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4cd1c0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .main-title {
+                font-size: 32px;
+                margin: 30px 0 15px;
+            }
+            
+            .description {
+                font-size: 16px;
+                margin-bottom: 30px;
+            }
+            
+            .upload-area {
+                padding: 30px 20px;
+            }
+            
+            .upload-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .brand-name {
+                font-size: 20px;
+            }
+            
+            .upload-section,
+            .benefits {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="logo.jpg" alt="CareerCraft Logo" class="logo">
+            <span class="brand-name">CareerCraft</span>
+        </div>
+        <div class="user-nav">
+            <span class="user-name">Jhansi</span>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="dashboard.html" class="back-btn">Back to Dashboard</a>
+        
+        <h1 class="main-title">Upload Your Resume</h1>
+        <p class="description">Let us know about your skills and experience to help you find the perfect job match.</p>
+        
+        <div class="upload-section">
+            <h2>Resume Upload</h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p class="upload-text">Drag & drop your resume here or click to browse</p>
+                <p class="file-info">Accepts PDF, DOC, DOCX (Max 5MB)</p>
+                <input type="file" class="file-input" id="resumeFile" accept=".pdf,.doc,.docx">
+            </div>
+            
+            <div class="selected-file" id="selectedFile">
+                <span class="file-name" id="fileName">resume.pdf</span>
+                <button class="remove-file" id="removeFile">Remove</button>
+                <span class="file-meta" id="fileSize">Size: 1.2 MB</span>
+            </div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+                <p class="progress-text" id="progressText">Uploading... 0%</p>
+            </div>
+            
+            <button class="submit-btn" id="submitBtn" disabled>Submit Resume</button>
+        </div>
+        
+        <div class="benefits">
+            <h3>Benefits of Uploading Your Resume</h3>
+            <ul class="benefits-list">
+                <li>Get matched with jobs that fit your skills and experience</li>
+                <li>Employers can find you more easily in our database</li>
+                <li>Save time on job applications with one-click apply</li>
+                <li>Receive personalized job recommendations</li>
+                <li>Track your application status in one place</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resumeFile = document.getElementById('resumeFile');
+            const uploadArea = document.getElementById('uploadArea');
+            const selectedFile = document.getElementById('selectedFile');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFile = document.getElementById('removeFile');
+            const submitBtn = document.getElementById('submitBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            // Initialize - hide the selected file section
+            selectedFile.style.display = 'none';
+            
+            // Make the upload area clickable to trigger file input
+            uploadArea.addEventListener('click', function() {
+                resumeFile.click();
+            });
+            
+            // Handle file selection
+            resumeFile.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    
+                    // Check file type
+                    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                    if (!validTypes.includes(file.type)) {
+                        alert('Please upload a PDF, DOC, or DOCX file');
+                        return;
+                    }
+                    
+                    // Check file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size exceeds 5MB limit');
+                        return;
+                    }
+                    
+                    // Display file info
+                    fileName.textContent = file.name;
+                    
+                    // Format file size
+                    let size = file.size;
+                    if (size < 1024) {
+                        fileSize.textContent = `Size: ${size} bytes`;
+                    } else if (size < 1024 * 1024) {
+                        fileSize.textContent = `Size: ${(size / 1024).toFixed(1)} KB`;
+                    } else {
+                        fileSize.textContent = `Size: ${(size / (1024 * 1024)).toFixed(1)} MB`;
+                    }
+                    
+                    selectedFile.style.display = 'block';
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            // Remove selected file
+            removeFile.addEventListener('click', function() {
+                resumeFile.value = '';
+                selectedFile.style.display = 'none';
+                submitBtn.disabled = true;
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressText.textContent = 'Uploading... 0%';
+            });
+            
+            // Highlight drop area on drag over
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#4cd1c0';
+                this.style.backgroundColor = '#f5f5f5';
+            });
+            
+            // Remove highlight on drag leave
+            uploadArea.addEventListener('dragleave', function() {
+                this.style.borderColor = '#ccc';
+                this.style.backgroundColor = '';
+            });
+            
+            // Handle drop
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ccc';
+                this.style.backgroundColor = '';
+                
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    resumeFile.files = e.dataTransfer.files;
+                    
+                    // Trigger change event
+                    const event = new Event('change');
+                    resumeFile.dispatchEvent(event);
+                }
+            });
+            
+            // Submit resume
+            submitBtn.addEventListener('click', function() {
+                if (!resumeFile.files || !resumeFile.files[0]) {
+                    alert('Please select a file to upload');
+                    return;
+                }
+                
+                // Show progress
+                progressContainer.style.display = 'block';
+                submitBtn.disabled = true;
+                
+                // Simulate upload progress
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += 5;
+                    if (progress <= 100) {
+                        progressBar.style.width = progress + '%';
+                        progressText.textContent = `Uploading... ${progress}%`;
+                    } else {
+                        clearInterval(interval);
+                        progressText.textContent = 'Upload complete!';
+                        progressBar.style.backgroundColor = '#2ecc71';
+                        
+                        // Simulate server response delay
+                        setTimeout(function() {
+                            alert('Resume uploaded successfully! Redirecting to job matches...');
+                            // Redirect or show next steps
+                            window.location.href = 'jobmatch.html';
+                        }, 1000);
+                    }
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
