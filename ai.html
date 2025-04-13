@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Interview Simulator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .video-container {
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .interviewer-video {
+            width: calc(50% - 5px);
+            height: 300px;
+            background-color: #2c3e50;
+            position: relative;
+        }
+        .user-video {
+            width: calc(50% - 5px);
+            height: 300px;
+            background-color: #34495e;
+            position: relative;
+        }
+        .controls {
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .question-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .response-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .select-role {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .status {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .mic-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        #interviewComplete {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .listening-indicator {
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .transcript {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .response-time {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .connection-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        #videoCallControls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .call-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .mute {
+            background-color: #555;
+        }
+        .mute.active {
+            background-color: #e74c3c;
+        }
+        .video-toggle {
+            background-color: #555;
+        }
+        .video-toggle.active {
+            background-color: #e74c3c;
+        }
+        .end-call {
+            background-color: #e74c3c;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #3498db;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive AI Video Interview Simulator</h1>
+        
+        <div class="controls">
+            <div class="status">Selected role: <span id="currentRole">Not selected</span></div>
+            <select id="roleSelect" class="select-role">
+                <option value="">-- Select a role --</option>
+                <option value="data-analyst">Data Analyst</option>
+                <option value="backend-developer">Backend Developer</option>
+            </select>
+            <button id="startInterview">Start Interview</button>
+            <span class="timer" id="timer">00:00</span>
+        </div>
+        
+        <div class="video-container">
+            <div class="interviewer-video">
+                <div class="connection-status" id="interviewerStatus">Waiting to connect</div>
+                <div class="avatar" id="interviewerAvatar">AI INTERVIEWER</div>
+            </div>
+            <div class="user-video">
+                <div class="connection-status" id="userStatus">Camera off</div>
+                <video id="userVideoElement" autoplay muted style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+                <div class="avatar" id="userAvatar">YOU</div>
+                <div class="mic-status" id="micStatus">Microphone inactive</div>
+            </div>
+            <div id="videoCallControls">
+                <div class="call-button mute" id="muteButton">🎤</div>
+                <div class="call-button video-toggle" id="videoButton">📹</div>
+                <div class="call-button end-call" id="endCallButton">📞</div>
+            </div>
+        </div>
+        
+        <div class="question-container">
+            <h3>Current Question:</h3>
+            <p id="currentQuestion">The interview will begin once you select a role and press "Start Interview".</p>
+            <div class="transcript" id="questionTranscript"></div>
+            <div class="buttons-row">
+                <button id="nextQuestion" disabled>Next Question</button>
+                <button id="repeatQuestion" disabled>Repeat Question</button>
+            </div>
+        </div>
+        
+        <div class="response-container" id="responseSection" style="display: none;">
+            <h3>Your Response:</h3>
+            <div id="responseStatus">
+                <span class="listening-indicator" id="listeningIndicator" style="display: none;"></span>
+                <span id="responseText">Waiting for you to speak...</span>
+            </div>
+            <div class="transcript" id="responseTranscript"></div>
+            <div class="response-time" id="responseTime"></div>
+            <div class="feedback" id="aiFeedback" style="display: none;"></div>
+            <div class="buttons-row">
+                <button id="startResponse">Start Speaking</button>
+                <button id="stopResponse" disabled>Stop Speaking</button>
+            </div>
+        </div>
+        
+        <div id="interviewComplete" style="display: none;">
+            <h2>Interview Complete</h2>
+            <p>Thank you for participating in the AI interview simulation.</p>
+            <button id="restartInterview">Start New Interview</button>
+        </div>
+    </div>
+    
+    <script>
+        // Interview questions by role
+        const interviewQuestions = {
+            'data-analyst': [
+                "Tell me about your experience with data analysis and the tools you're familiar with.",
+                "Can you explain your process for cleaning and preparing raw data for analysis?",
+                "Describe a challenging data analysis project you've worked on. What made it difficult and how did you overcome those challenges?",
+                "How do you ensure the accuracy and quality of your analysis?",
+                "What statistical methods do you typically use for analyzing data?",
+                "How do you approach communicating complex data insights to non-technical stakeholders?",
+                "Describe your experience with SQL and database querying.",
+                "How do you stay current with the latest data analysis techniques and tools?",
+                "Can you explain the difference between correlation and causation, and why this distinction matters?",
+                "What visualization tools do you prefer and why?",
+                "Describe a situation where your data analysis led to a significant business decision or improvement."
+            ],
+            'backend-developer': [
+                "Tell me about your experience with backend development and the technologies you've worked with.",
+                "How do you approach API design and what principles do you follow?",
+                "Describe your experience with database design and optimization.",
+                "How do you ensure the security of a backend system?",
+                "Tell me about a challenging backend project you've worked on. What made it difficult and how did you solve those challenges?",
+                "How do you handle scaling issues in backend applications?",
+                "What's your approach to writing maintainable and testable code?",
+                "Describe your experience with containerization and deployment.",
+                "How do you debug and troubleshoot backend issues?",
+                "What's your experience with message brokers and event-driven architectures?",
+                "How do you stay current with new backend technologies and best practices?"
+            ]
+        };
+        
+        // Feedback templates by role
+        const feedbackTemplates = {
+            'data-analyst': [
+                "Your answer provides good technical details about {topic}. Consider also mentioning how your skills directly impacted business outcomes.",
+                "Good explanation of your process. To strengthen your answer, you might want to include specific examples of when you applied these methods.",
+                "Your experience with {tool} sounds valuable. Consider quantifying the impact of your work when possible.",
+                "Strong answer regarding {topic}. To make it even better, you could briefly mention how you validate your findings.",
+                "Good technical response. Consider structuring your answer with a clear problem, approach, and outcome format for more impact.",
+                "Your communication skills come across well. You might enhance this by mentioning how you tailor explanations for different stakeholders.",
+                "Strong technical foundation demonstrated. Consider adding a brief example of how you've applied these skills in a real scenario."
+            ],
+            'backend-developer': [
+                "Good explanation of your experience with {topic}. Consider emphasizing how your technical choices impacted system performance or reliability.",
+                "Your approach to {topic} shows good technical understanding. Consider also mentioning how you balance technical debt against delivery timelines.",
+                "Strong technical answer about {topic}. You might want to briefly mention how you stay current with best practices in this area.",
+                "Good points about {topic}. To strengthen your answer, consider including a brief example of how you've implemented these principles.",
+                "Your explanation demonstrates solid technical knowledge. Consider structuring future answers with a problem-solution-outcome approach.",
+                "Good technical depth. Consider also briefly addressing how you collaborate with other teams when implementing these systems.",
+                "Strong answer on {topic}. You might enhance this by briefly mentioning how you measure success in your implementations."
+            ]
+        };
+        
+        // Interview introduction by role
+        const introductions = {
+            'data-analyst': "Hello, I'm Alex, and I'll be conducting your interview for the Data Analyst position today. We're looking for someone with strong analytical skills who can interpret complex data and communicate insights effectively. I'll be asking you several questions to understand your experience and approach. Please respond to each question as thoroughly as you can, and I'll be listening through your microphone. Let's get started.",
+            'backend-developer': "Hello, I'm Taylor, and I'll be interviewing you for the Backend Developer role today. We're seeking someone who can design robust, scalable systems and implement efficient backend solutions. I'll be asking you a series of questions about your experience and technical skills. Please provide detailed responses through your microphone, and take your time to think through your answers. Let's begin."
+        };
+        
+        // Interview closing by role
+        const closings = {
+            'data-analyst': "Thank you for your thoughtful responses today. We were looking for someone who demonstrates strong analytical thinking, technical proficiency with data tools, and the ability to communicate insights clearly. I appreciate your time and the insights you've shared about your experience. The hiring team will review this interview, and you should hear back within a week about next steps.",
+            'backend-developer': "Thank you for sharing your experience and knowledge with me today. We value developers who can design scalable systems, write clean code, and solve complex problems. You've provided valuable insights into your approach and experience. The hiring team will review your interview, and we aim to get back to you within the next 5-7 business days regarding next steps."
+        };
+        
+        // Common words to filter out when analyzing responses
+        const commonWords = [
+            'the', 'and', 'that', 'for', 'with', 'this', 'you', 'your', 'have', 'are', 'not',
+            'can', 'about', 'how', 'what', 'when', 'where', 'why', 'which', 'who', 'would',
+            'could', 'should', 'been', 'were', 'they', 'them', 'their', 'our', 'will', 'from'
+        ];
+        
+        // Array to store user responses for analysis
+        let userResponses = [];
+        
+        // DOM elements
+        const roleSelect = document.getElementById('roleSelect');
+        const startButton = document.getElementById('startInterview');
+        const nextButton = document.getElementById('nextQuestion');
+        const repeatButton = document.getElementById('repeatQuestion');
+        const restartButton = document.getElementById('restartInterview');
+        const currentQuestion = document.getElementById('currentQuestion');
+        const currentRoleElement = document.getElementById('currentRole');
+        const timerElement = document.getElementById('timer');
+        const interviewCompleteElement = document.getElementById('interviewComplete');
+        const interviewerAvatar = document.getElementById('interviewerAvatar');
+        
+        const responseSection = document.getElementById('responseSection');
+        const startResponseButton = document.getElementById('startResponse');
+        const stopResponseButton = document.getElementById('stopResponse');
+        const responseStatus = document.getElementById('responseText');
+        const responseTranscript = document.getElementById('responseTranscript');
+        const listeningIndicator = document.getElementById('listeningIndicator');
+        const responseTime = document.getElementById('responseTime');
+        const aiFeedback = document.getElementById('aiFeedback');
+        
+        const userVideo = document.getElementById('userVideoElement');
+        const userAvatar = document.getElementById('userAvatar');
+        const muteButton = document.getElementById('muteButton');
+        const videoButton = document.getElementById('videoButton');
+        const endCallButton = document.getElementById('endCallButton');
+        const micStatus = document.getElementById('micStatus');
+        const interviewerStatus = document.getElementById('interviewerStatus');
+        const userStatus = document.getElementById('userStatus');
+        
+        // Interview state
+        let currentRole = '';
+        let currentQuestionIndex = -1;
+        let questions = [];
+        let interviewStarted = false;
+        let timerInterval;
+        let startTime;
+        let responseStartTime;
+        let isListening = false;
+        let recognition = null;
+        let transcript = '';
+        let mediaStream = null;
+        let isMuted = false;
+        let isVideoOn = false;
+        
+        // Initialize speech synthesis
+        let synth = null;
+        try {
+            synth = window.speechSynthesis;
+            if (!synth) {
+                console.error("Speech synthesis not available");
+            }
+        } catch (e) {
+            console.error("Error initializing speech synthesis:", e);
+        }
+        
+        // Event listeners
+        roleSelect.addEventListener('change', function() {
+            currentRole = this.value;
+            currentRoleElement.textContent = this.options[this.selectedIndex].text;
+            startButton.disabled = !currentRole;
+        });
+        
+        startButton.addEventListener('click', startInterview);
+        nextButton.addEventListener('click', nextQuestion);
+        repeatButton.addEventListener('click', repeatQuestion);
+        restartButton.addEventListener('click', resetInterview);
+        
+        startResponseButton.addEventListener('click', startListening);
+        stopResponseButton.addEventListener('click', stopListening);
+        
+        muteButton.addEventListener('click', toggleMute);
+        videoButton.addEventListener('click', toggleVideo);
+        endCallButton.addEventListener('click', endInterview);
+        
+        // Check for browser support for SpeechRecognition
+        function checkSpeechRecognitionSupport() {
+            return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+        }
+        
+        // Alert if speech recognition is not supported
+        if (!checkSpeechRecognitionSupport()) {
+            console.warn('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        }
+        
+        // Functions
+        function startInterview() {
+            if (!currentRole) {
+                alert("Please select a role first!");
+                return;
+            }
+            
+            console.log("Starting interview for role:", currentRole);
+            
+            // Request microphone and camera access
+            navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                .then(stream => {
+                    console.log("Media stream obtained successfully");
+                    mediaStream = stream;
+                    
+                    // Set up video
+                    userVideo.srcObject = stream;
+                    userVideo.onloadedmetadata = function(e) {
+                        userVideo.play().catch(err => {
+                            console.error("Error playing video:", err);
+                        });
+                    };
+                    
+                    // Reset and initialize
+                    interviewStarted = true;
+                    currentQuestionIndex = -1;
+                    questions = [...interviewQuestions[currentRole]]; // Create a copy
+                    
+                    // Update UI
+                    startButton.disabled = true;
+                    nextButton.disabled = false;
+                    repeatButton.disabled = false;
+                    roleSelect.disabled = true;
+                    responseSection.style.display = 'block';
+                    
+                    // Set connection status
+                    interviewerStatus.textContent = 'Connected';
+                    interviewerStatus.style.backgroundColor = 'rgba(76, 175, 80, 0.7)';
+                    userStatus.textContent = 'Connected';
+                    userStatus.style.backgroundColor = 'rgba(76, 175, 80, 0.7)';
+                    
+                    // Start timer
+                    startTime = new Date();
+                    timerInterval = setInterval(updateTimer, 1000);
+                    
+                    // Change avatar color to indicate active interview
+                    interviewerAvatar.style.backgroundColor = '#3498db';
+                    
+                    // Introduce the interview
+                    const introText = introductions[currentRole];
+                    currentQuestion.textContent = introText;
+                    
+                    if (synth) {
+                        speakText(introText);
+                    } else {
+                        console.warn("Speech synthesis not available, skipping voice intro");
+                        // Move to first question after a delay even without speech
+                        setTimeout(nextQuestion, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error accessing media devices:", error);
+                    alert("Microphone and camera access are required for the interview. Please allow access and try again.");
+                });
+        }
+        
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            // Check if we've reached the end of the questions
+            if (currentQuestionIndex >= questions.length) {
+                endInterview();
+                return;
+            }
+            
+            // Clear previous response
+            responseTranscript.textContent = '';
+            responseTime.textContent = '';
+            aiFeedback.style.display = 'none';
+            responseStatus.textContent = 'Waiting for you to speak...';
+            
+            // Enable response buttons
+            startResponseButton.disabled = false;
+            stopResponseButton.disabled = true;
+            
+            // Display and speak the next question
+            const questionText = questions[currentQuestionIndex];
+            currentQuestion.textContent = questionText;
+            
+            console.log("Asking question:", questionText);
+            
+            if (synth) {
+                speakText(questionText);
+            }
+        }
+        
+        function repeatQuestion() {
+            if (currentQuestionIndex >= 0 && currentQuestionIndex < questions.length) {
+                const questionText = questions[currentQuestionIndex];
+                if (synth) {
+                    speakText(questionText);
+                }
+            }
+        }
+        
+        function endInterview() {
+            console.log("Ending interview");
+            
+            // Stop the timer
+            clearInterval(timerInterval);
+            
+            // Stop any ongoing speech and listening
+            if (synth) synth.cancel();
+            if (isListening) stopListening();
+            
+            // Stop media stream
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Speak closing remarks
+            const closingText = closings[currentRole];
+            currentQuestion.textContent = closingText;
+            
+            if (synth) {
+                speakText(closingText, true);
+            }
+            
+            // Update UI
+            nextButton.disabled = true;
+            repeatButton.disabled = true;
+            startResponseButton.disabled = true;
+            stopResponseButton.disabled = true;
+            
+            // Set connection status
+            interviewerStatus.textContent = 'Disconnected';
+            interviewerStatus.style.backgroundColor = 'rgba(231, 76, 60, 0.7)';
+            userStatus.textContent = 'Disconnected';
+            userStatus.style.backgroundColor = 'rgba(231, 76, 60, 0.7)';
+            
+            // Hide video and return to avatar
+            userVideo.style.display = 'none';
+            userAvatar.style.display = 'flex';
+            
+            // Show interview complete section
+            setTimeout(() => {
+                interviewCompleteElement.style.display = 'block';
+            }, 2000);
+        }
+        
+        function resetInterview() {
+            console.log("Resetting interview");
+            
+            // Reset all state
+            interviewStarted = false;
+            currentQuestionIndex = -1;
+            clearInterval(timerInterval);
+            
+            // Reset UI
+            startButton.disabled = false;
+            nextButton.disabled = true;
+            repeatButton.disabled = true;
+            roleSelect.disabled = false;
+            timerElement.textContent = '00:00';
+            currentQuestion.textContent = "The interview will begin once you select a role and press \"Start Interview\".";
+            interviewCompleteElement.style.display = 'none';
+            responseSection.style.display = 'none';
+            interviewerAvatar.style.backgroundColor = '#2c3e50';
+            
+            // Reset statuses
+            interviewerStatus.textContent = 'Waiting to connect';
+            interviewerStatus.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            userStatus.textContent = 'Camera off';
+            userStatus.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        }
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
+            const seconds = (diff % 60).toString().padStart(2, '0');
+            timerElement.textContent = `${minutes}:${seconds}`;
+        }
+        
+        function speakText(text, isClosing = false) {
+            if (!synth) {
+                console.warn("Speech synthesis not available");
+                return;
+            }
+            
+            // Stop any ongoing speech
+            synth.cancel();
+            
+            // Create a new speech utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            
+            // Set voice based on role (optional)
+            setTimeout(() => {
+                const voices = synth.getVoices();
+                console.log("Available voices:", voices.length);
+                
+                if (voices.length > 0) {
+                    // Try to get a nice voice if available
+                    const preferredVoice = voices.find(voice => 
+                        voice.name.includes('Google') || 
+                        voice.name.includes('Premium') ||
+                        voice.name.includes('Enhanced')
+                    ) || voices[0];
+                    
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
+                    }
+                }
+                
+                // Visual indicator that AI is speaking
+                interviewerAvatar.style.backgroundColor = '#e74c3c'; // Red when speaking
+                
+                utterance.onend = function() {
+                    // Change back when done speaking
+                    interviewerAvatar.style.backgroundColor = '#3498db';
+                    
+                    if (isClosing) {
+                        // Special handling for closing statement
+                        setTimeout(() => {
+                            interviewerAvatar.style.backgroundColor = '#2c3e50';
+                        }, 1000);
+                    }
+                };
+                
+                // Speak the text
+                synth.speak(utterance);
+            }, 100);
+        }
+        
+        function initSpeechRecognition() {
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    throw new Error('Speech recognition not supported');
+                }
+                
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    console.log("Speech recognition started");
+                    isListening = true;
+                    responseStartTime = new Date();
+                    listeningIndicator.style.display = 'inline-block';
+                    responseStatus.textContent = 'Listening...';
+                    micStatus.textContent = 'Microphone active';
+                    micStatus.style.backgroundColor = 'rgba(76, 175, 80, 0.7)';
+                };
+                
+                recognition.onresult = function(event) {
+                    console.log("Speech recognition result received");
+                    transcript = '';
+                    for (let i = 0; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            transcript += event.results[i][0].transcript + ' ';
+                        }
+                    }
+                    responseTranscript.textContent = transcript;
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    if (event.error === 'not-allowed') {
+                        alert('Microphone access is required for this feature.');
+                    }
+                };
+                
+                recognition.onend = function() {
+                    console.log("Speech recognition ended", isListening);
+                    // If stopped manually, don't restart
+                    if (!isListening) return;
+                    
+                    // Otherwise restart recognition (to keep it continuous)
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('Error restarting recognition:', e);
+                    }
+                };
+            } catch (error) {
+                console.error('Error initializing speech recognition:', error);
+                alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+            }
+        }
+        
+        function startListening() {
+            console.log("Starting listening...");
+            
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            
+            if (!recognition) {
+                alert('Speech recognition failed to initialize. Please try using Chrome browser.');
+                return;
+            }
+            
+            try {
+                recognition.start();
+                startResponseButton.disabled = true;
+                stopResponseButton.disabled = false;
+            } catch (e) {
+                console.error('Error starting recognition:', e);
+                alert('There was an error accessing your microphone. Please check your browser permissions.');
+            }
+        }
+        
+        function stopListening() {
+            console.log("Stopping listening...");
+            
+            if (recognition) {
+                isListening = false;
+                recognition.stop();
+                listeningIndicator.style.display = 'none';
+                responseStatus.textContent = 'Response recorded';
+                micStatus.textContent = 'Microphone inactive';
+                micStatus.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                
+                // Calculate response time
+                const responseEndTime = new Date();
+                const responseSeconds = Math.floor((responseEndTime - responseStartTime) / 1000);
+                const responseMinutes = Math.floor(responseSeconds / 60);
+                const remainderSeconds = responseSeconds % 60;
+                responseTime.textContent = `Response time: ${responseMinutes}m ${remainderSeconds}s`;
+                
+                startResponseButton.disabled = false;
+                stopResponseButton.disabled = true;
+                
+                // Generate AI feedback
+                function generateFeedback() {
+    if (!transcript || transcript.trim() === '') {
+        aiFeedback.textContent = "No response detected. Please try speaking again.";
+        aiFeedback.style.display = 'block';
+        return;
+    }
+    
+    // Store the response for later analysis
+    userResponses.push({
+        question: questions[currentQuestionIndex],
+        response: transcript,
+        time: responseSeconds
+    });
+    
+    // Simple keyword extraction
+    const words = transcript.toLowerCase().split(/\s+/);
+    const keywordCounts = {};
+    
+    words.forEach(word => {
+        // Filter out common words and short words
+        if (word.length > 3 && !commonWords.includes(word)) {
+            keywordCounts[word] = (keywordCounts[word] || 0) + 1;
+        }
+    });
+    
+    // Get top keywords
+    const sortedKeywords = Object.keys(keywordCounts)
+        .sort((a, b) => keywordCounts[b] - keywordCounts[a])
+        .slice(0, 3);
+    
+    // Randomly select a feedback template
+    const templates = feedbackTemplates[currentRole];
+    let template = templates[Math.floor(Math.random() * templates.length)];
+    
+    // Insert a keyword into the template if available
+    if (sortedKeywords.length > 0) {
+        const keyword = sortedKeywords[0];
+        template = template.replace('{topic}', keyword);
+    } else {
+        template = template.replace('{topic}', 'this topic');
+    }
+    
+    // Display feedback with a loading effect
+    aiFeedback.innerHTML = '<div class="loader"></div>';
+    aiFeedback.style.display = 'block';
+    
+    setTimeout(() => {
+        aiFeedback.textContent = template;
+    }, 1500);
+}
+
+function toggleMute() {
+    if (mediaStream) {
+        const audioTracks = mediaStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+            isMuted = !isMuted;
+            audioTracks[0].enabled = !isMuted;
+            
+            muteButton.classList.toggle('active', isMuted);
+            micStatus.textContent = isMuted ? 'Microphone muted' : 'Microphone inactive';
+        }
+    }
+}
+
+function toggleVideo() {
+    if (mediaStream) {
+        const videoTracks = mediaStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+            isVideoOn = !isVideoOn;
+            videoTracks[0].enabled = isVideoOn;
+            
+            videoButton.classList.toggle('active', !isVideoOn);
+            
+            if (isVideoOn) {
+                userVideo.style.display = 'block';
+                userAvatar.style.display = 'none';
+                userStatus.textContent = 'Video on';
+            } else {
+                userVideo.style.display = 'none';
+                userAvatar.style.display = 'flex';
+                userStatus.textContent = 'Video off';
+            }
+        }
+    }
+}
