@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - Job Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="jm.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <img src="logo.jpg" alt="CareerCue Logo" class="logo">
+                <div style="color: white; font-weight: bold; font-size: 1.5rem;">CareerCraft</div>
+                <div class="user-menu">
+                    <span class="user-name" id="user-name">Jhansi</span>
+                    <button class="menu-button" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="nav-tab">Dashboard</div>
+            <div class="nav-tab">My Resume</div>
+            <div class="nav-tab active">Job Matches</div>
+            <div class="nav-tab">Interview Prep</div>
+            <div class="nav-tab">Settings</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1>Your Job Matches</h1>
+                <p>We found these opportunities that match your profile. Select a job to start preparing for your interview.</p>
+            </div>
+            
+            <!-- Resume Skills Section -->
+            <div class="resume-skills-section" id="resume-skills-section">
+                <h3>Your Resume Skills</h3>
+                <div class="skills-container" id="user-skills"></div>
+                <button class="update-skills-button" id="update-skills-btn">Update Skills</button>
+            </div>
+            
+            <!-- Resume analyzer indicator -->
+            <div class="resume-status" id="resume-analyzer">
+                <i class="fas fa-file-alt"></i>
+                <div class="resume-status-text">
+                    <h3>Resume Analysis</h3>
+                    <p>We're analyzing your resume to find the best job matches.</p>
+                </div>
+            </div>
+
+            <div class="resume-status hidden" id="resume-analysis-complete">
+                <i class="fas fa-check-circle"></i>
+                <div class="resume-status-text">
+                    <h3>Analysis Complete</h3>
+                    <p>We've found <span id="job-match-count">0</span> jobs that match your skills and experience.</p>
+                </div>
+            </div>
+            
+            <div id="analysis-loader">
+                <div class="loader"></div>
+                <p style="text-align: center; color: #666;">Analyzing your resume and finding matches...</p>
+            </div>
+            
+            <div id="job-content" class="hidden">
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="job-search" placeholder="Search for jobs, skills, or companies...">
+                    </div>
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label for="company-filter">Company</label>
+                            <select id="company-filter">
+                                <option value="">All Companies</option>
+                                <option value="Google">Google</option>
+                                <option value="Microsoft">Microsoft</option>
+                                <option value="Amazon">Amazon</option>
+                                <option value="Meta">Meta</option>
+                                <option value="Adobe">Adobe</option>
+                                <option value="Salesforce">Salesforce</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="role-filter">Job Role</label>
+                            <select id="role-filter">
+                                <option value="">All Roles</option>
+                                <option value="Data Scientist">Data Scientist</option>
+                                <option value="Software Engineer">Software Engineer</option>
+                                <option value="Product Manager">Product Manager</option>
+                                <option value="UX Designer">UX Designer</option>
+                                <option value="Backend Developer">Backend Developer</option>
+                                <option value="Frontend Developer">Frontend Developer</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="match-filter">Match %</label>
+                            <select id="match-filter">
+                                <option value="">All Matches</option>
+                                <option value="90">90%+</option>
+                                <option value="80">80%+</option>
+                                <option value="70">70%+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="location-filter">Location</label>
+                            <select id="location-filter">
+                                <option value="">All Locations</option>
+                                <option value="Remote">Remote</option>
+                                <option value="San Francisco, CA">San Francisco, CA</option>
+                                <option value="New York, NY">New York, NY</option>
+                                <option value="Seattle, WA">Seattle, WA</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                            </select>
+                        </div>
+                        <div class="filter-buttons">
+                            <button class="filter-button" id="apply-filters">Apply Filters</button>
+                            <button class="save-search-button">Save Search</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="job-listings" id="job-listings"></div>
+                <div class="pagination">
+                    <button class="pagination-button" id="prev-page"><i class="fas fa-chevron-left"></i></button>
+                    <span class="pagination-info" style="margin: 0 10px;">
+                        Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+                    </span>
+                    <button class="pagination-button" id="next-page"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interview Prep Modal -->
+    <div class="modal-overlay" id="interview-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-job-title">Interview Preparation</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="interview-prep-tabs">
+                <div class="interview-tab active" data-tab="questions">Common Questions</div>
+                <div class="interview-tab" data-tab="company">Company Insights</div>
+                <div class="interview-tab" data-tab="skills">Skill Assessment</div>
+            </div>
+            <div id="questions-tab" class="tab-content active">
+                <div id="questions-content"></div>
+            </div>
+            <div id="company-tab" class="tab-content">
+                <div id="company-content"></div>
+            </div>
+            <div id="skills-tab" class="tab-content">
+                <div id="skills-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Update Modal -->
+    <div class="modal-overlay" id="skills-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Update Your Skills</h2>
+                <button class="close-modal" id="close-skills-modal">&times;</button>
+            </div>
+            <div class="skills-selection">
+                <p>Check the skills that best represent your experience:</p>
+                <div class="skills-grid" id="skills-grid"></div>
+                <button class="save-skills-button" id="save-skills-btn">Save Skills</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">Job saved to your favorites!</div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div style="color: white; font-weight: bold; font-size: 1.2rem; margin-bottom: 20px;">CareerCraft</div>
+            <div class="footer-links">
+                <a href="#">About Us</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="copyright">© 2025 CareerCraft. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="jm.js"></script>
+</body>
+</html>
