@@ -1106,11 +1106,14 @@ function showNotification(message) {
     elements.notification.textContent = message;
     elements.notification.classList.add('show');
     
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-        elements.notification.classList.remove('show');
-    }, 3000);
-}
+  // After showing analysis complete
+document.getElementById("resume-analysis-complete").classList.remove("hidden");
+
+// Redirect after a short delay (like 3 seconds)
+setTimeout(() => {
+    window.location.href = "ai.html";
+}, 3000);
+
 
 // Make sure to call init when the DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
